@@ -26,23 +26,32 @@ body {
 .calculator {
 	width: 400px;
 	background-color: #5b6467;
-background-image: linear-gradient(315deg, #5b6467 0%, #8b939a 74%);
+	background-image: linear-gradient(315deg, #5b6467 0%, #8b939a 74%);
 	padding: 20px;
 	border-radius: 20px;
 	box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
 }
 
 .screen {
-	height: 140px;
 	background-color: rgb(228, 228, 230);
 	border-radius: 20px;
 	margin-bottom: 15px;
 	overflow: hidden;
+
+	.display {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		margin: 10px;
+		flex-wrap: wrap;
+		font-size: 5rem;
+	}
+
 }
 
 .buttons {
 	display: grid;
-	grid-template-columns: repeat(4,1fr);
+	grid-template-columns: repeat(4, 1fr);
 	gap: 15px;
 
 	.btn {
@@ -67,7 +76,7 @@ background-image: linear-gradient(315deg, #5b6467 0%, #8b939a 74%);
 	.btn-operator {
 		background-color: rgb(245, 218, 169);
 	}
-	
+
 	.btn-equal {
 		background-color: rgb(247, 194, 96);
 	}
