@@ -35,6 +35,9 @@ const handleCE = () => {
 	const tempCE = currentInputArray.join('');
 	if (!operator && !result) {
 		firstNumber = parseFloat(tempCE);
+		if (isNaN(firstNumber)) {
+			firstNumber = 0;
+		}
 		console.log(`${firstNumber} first number after CE`);
 		display.textContent = firstNumber;
 	} else {
@@ -48,14 +51,16 @@ const handleCE = () => {
 };
 
 const handleNumber = (btn) => {
+	const btnValue = typeof btn === 'object' ? btn.value : btn;
+	console.log(btnValue);
 	if (!operator && !result) {
-		currentInputArray.push(btn.value);
+		currentInputArray.push(btnValue);
 		let joinedFirstNumber = currentInputArray.join('');
 		firstNumber = parseFloat(joinedFirstNumber);
 		display.textContent = firstNumber;
 		console.log(`${firstNumber} first number`);
 	} else {
-		currentInputArray.push(btn.value);
+		currentInputArray.push(btnValue);
 		let joinedSecondNumber = currentInputArray.join('');
 		secondNumber = parseFloat(joinedSecondNumber);
 		display.textContent = secondNumber;
@@ -64,22 +69,28 @@ const handleNumber = (btn) => {
 };
 
 const handleOperator = (btn) => {
+	const btnValue = typeof btn === 'object' ? btn.value : btn;
 	if (operator) {
 		if (!secondNumber) {
 			return;
 		}
 		setEqual();
-		operator = btn.value;
+		operator = btnValue;
 		console.log(`${operator} operator existed`);
 		return;
 	}
-	display.textContent = btn.value;
-	operator = btn.value;
+	display.textContent = btnValue;
+	operator = btnValue;
 	currentInputArray = [];
 	console.log(`${operator} operator`);
 };
 
 const setEqual = () => {
+	if(firstNumber === null || secondNumber === null) {
+		return
+	}
+	console.log(firstNumber);
+	console.log(secondNumber);
 	switch (operator) {
 		case '+':
 			result = firstNumber + secondNumber;
@@ -115,4 +126,19 @@ const setEqual = () => {
 
 btns.forEach((btn) => {
 	btn.addEventListener('click', () => calculate(btn));
+});
+
+window.addEventListener('keyup', (e) => {
+	const keyPressed = e.key;
+	if ('0123456789.'.includes(keyPressed)) {
+		handleNumber(keyPressed);
+	} else if ('*/+-'.includes(keyPressed)) {
+		handleOperator(keyPressed)
+	} else if (keyPressed === '=' || keyPressed === 'Enter') {
+		setEqual()
+	} else if (keyPressed === "Escape") {
+		resetCalculator()
+	} else if (keyPressed === "Backspace") {
+		handleCE()
+	}
 });
