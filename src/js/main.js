@@ -1,157 +1,118 @@
-// const numberBtns = document.querySelectorAll('.btn-number')
-// const operatorBtns = document.querySelectorAll('.btn-operator')
-const btns = document.querySelectorAll('.btn')
-const display = document.querySelector('.display')
-// const acBtn = document.querySelector('#AC')
-// const ceBtn = document.querySelector('#CE')
-// const equalBtn = document.querySelector('.btn-equal')
-// const lastScreen = document.querySelector('.screen-last')
-// const currentScreen = document.querySelector('.screen-current')
+const btns = document.querySelectorAll('.btn');
+const display = document.querySelector('.display');
 
-let calculation = []
-let accuCalculation
-let result
+let currentInputArray = [];
+let result = null;
+let operator = null;
+let secondNumber = null;
+let firstNumber = 0;
 
-const calculate = btn => {
+const calculate = (btn) => {
 	if (btn.value === 'AC') {
-		calculation = []
-		display.textContent = '.'
+		resetCalculator();
 	} else if (btn.value === 'CE') {
-		calculation.pop()
-		display.textContent = calculation.join('')
+		handleCE();
 	} else if (btn.value === '=') {
-		console.log(accuCalculation)
-		result = eval(accuCalculation)
-		display.textContent = result
-		accuCalculation = result
-		calculation = [result]
+		setEqual();
+	} else if (btn.classList.contains('btn-number')) {
+		handleNumber(btn);
 	} else {
-		calculation.push(btn.value)
-		accuCalculation = calculation.join('')
-		display.textContent = accuCalculation
+		handleOperator(btn);
 	}
-}
+};
 
-// const add = (a, b) => {
-// 	return a + b
-// }
+const resetCalculator = () => {
+	currentInputArray = [];
+	firstNumber = null;
+	secondNumber = null;
+	result = null;
+	operator = null;
+	display.textContent = '.';
+};
 
-// const substract = (a,b) => {
-// 	return a - b
-// }
-
-// const multiplay = (a,b) => {
-// 	return a * b
-// }
-
-// const divide = (a,b) => {
-// 	if (b === 0) {
-// 		console.log('error');
-// 		return
-// 	}
-// 	return a/b
-// }
-
-const calculateResults = calcArray => {
-	let result = 0
-	let currentOperator = null
-
-	calcArray.forEach(data => {
-		if (typeof data === 'number') {
-			if (currentOperator) {
-				switch (currentOperator) {
-					case '+':
-						result = add(result, data)
-						break
-					case '-':
-						result = substract(result, data)
-						break
-					case '*':
-						result = multiplay(result, data)
-						break
-					case '/':
-						result = divide(result, data)
-						break
-					default:
-						console.log('unknow operator');
-					
-				}
-				currentOperator = null
-			} else {
-				result = data
-			}
-		} else if (typeof data === 'string') {
-			currentOperator = data
-		} else {
-			console.log('unknow type of data');
+const handleCE = () => {
+	currentInputArray.pop();
+	const tempCE = currentInputArray.join('');
+	if (!operator && !result) {
+		firstNumber = parseFloat(tempCE);
+		console.log(`${firstNumber} first number after CE`);
+		display.textContent = firstNumber;
+	} else {
+		secondNumber = parseFloat(tempCE);
+		if (isNaN(secondNumber)) {
+			secondNumber = 0;
 		}
-	})
-	return result
-}
-btns.forEach(btn => {
-	btn.addEventListener('click', () => calculate(btn))
-})
+		console.log(`${secondNumber} second number after CE`);
+		display.textContent = secondNumber;
+	}
+};
 
-// let numberValues = []
-// let lastValue = 0
-// let tempValues = []
+const handleNumber = (btn) => {
+	if (!operator && !result) {
+		currentInputArray.push(btn.value);
+		let joinedFirstNumber = currentInputArray.join('');
+		firstNumber = parseFloat(joinedFirstNumber);
+		display.textContent = firstNumber;
+		console.log(`${firstNumber} first number`);
+	} else {
+		currentInputArray.push(btn.value);
+		let joinedSecondNumber = currentInputArray.join('');
+		secondNumber = parseFloat(joinedSecondNumber);
+		display.textContent = secondNumber;
+		console.log(`${secondNumber} second number`);
+	}
+};
 
-// const operatorMap = {
-// 	'+': (a, b) => a + b,
-// 	'-': (a, b) => a - b,
-// 	'*': (a, b) => a * b,
-// 	'/': (a, b) => a / b,
-// };
+const handleOperator = (btn) => {
+	if (operator) {
+		if (!secondNumber) {
+			return;
+		}
+		setEqual();
+		operator = btn.value;
+		console.log(`${operator} operator existed`);
+		return;
+	}
+	display.textContent = btn.value;
+	operator = btn.value;
+	currentInputArray = [];
+	console.log(`${operator} operator`);
+};
 
-// btns.forEach(btn => {
-// 	btn.addEventListener('click', e => {
-// 		const clickedValue = e.target.value
-// 		let currentValue = numberValues.join('')
+const setEqual = () => {
+	switch (operator) {
+		case '+':
+			result = firstNumber + secondNumber;
+			break;
+		case '-':
+			result = firstNumber - secondNumber;
+			break;
+		case '*':
+			result = firstNumber * secondNumber;
+			break;
+		case '/':
+			if (secondNumber === 0) {
+				currentInputArray = [];
+				firstNumber = null;
+				secondNumber = null;
+				result = null;
+				operator = null;
+				return (display.textContent = 'DIVIDED BY 0');
+			}
+			result = firstNumber / secondNumber;
+			break;
+		default:
+			break;
+	}
+	result = parseFloat(result.toFixed(10));
+	firstNumber = result;
+	secondNumber = null;
+	operator = null;
+	currentInputArray = [];
+	display.textContent = result;
+	console.log(`${result} result number`);
+};
 
-// 		if (clickedValue === 'AC') {
-// 			clearAll()
-// 		} else if (clickedValue === 'CE') {
-// 			clearLast()
-// 		} else if (clickedValue === '=') {
-// 			console.log(numberValues)
-// 		} else if (btn.classList.contains('btn-number')) {
-// 			typeNumber(clickedValue)
-// 		} else if (btn.classList.contains('btn-operator')) {
-// 			if (parseInt(lastValue) !== 0) {
-// 				const count = parseFloat(lastValue) - parseFloat(currentValue)
-// 				console.log(parseFloat(`${lastValue} lastValue`));
-// 				console.log(parseFloat(`${currentValue} currentValue`));
-// 				console.log(`${count} count`);
-// 				lastValue = count
-// 				lastScreen.textContent = count + clickedValue
-// 				currentScreen.textContent = count
-// 			} else {
-//                 const count = parseFloat(currentValue)
-// 				lastValue = count
-// 				lastScreen.textContent = count + clickedValue
-//             }
-
-// 			numberValues = []
-// 		}
-// 	})
-// })
-
-// const clearAll = () => {
-// 	numberValues = []
-// 	lastScreen.textContent = ''
-// 	currentScreen.textContent = '0'
-// 	lastValue = 0
-// }
-
-// const clearLast = () => {
-// 	numberValues.pop()
-// 	currentScreen.textContent = numberValues.join('')
-// 	if (numberValues.length === 0) {
-// 		currentScreen.textContent = '0'
-// 	}
-// }
-
-// const typeNumber = clickedValue => {
-// 	numberValues.push(clickedValue)
-// 	currentScreen.textContent = numberValues.join('')
-// }
+btns.forEach((btn) => {
+	btn.addEventListener('click', () => calculate(btn));
+});
